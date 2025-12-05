@@ -229,6 +229,17 @@ public class evelator_controll : MonoBehaviour
     public GameObject Door_inside_left; public float Door_inside_left_close_value; public float Door_inside_left_open_value;
 
 
+    public void OpenDoorsAtFloor(int floorIndex)
+    {
+        if (floorIndex < 0 || floorIndex >= Door_outside_left.Length)
+            return;
+        
+        if (DoorOpening != null) StopCoroutine(DoorOpening);
+        if (DoorClose != null) StopCoroutine(DoorClose);
+
+        Doors_finished = false;
+        DoorOpening = StartCoroutine(HandleDoorOpen(floorIndex));
+    }
 
 
 
