@@ -3,13 +3,24 @@ using UnityEngine.Events;
 
 public class GenericTriggerButton : MonoBehaviour
 {
-    public string requiredTag = "Player";
     public UnityEvent onTriggered;
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("TRIGGERED BY: " + other.name);
+        // I know this is horrible, but it works LOL
+        if (other.transform.root.name == "Elevator")
+        {
+            return;
+        }
+        
+        Debug.Log(
+            "[GenericTriggerButton] TRIGGER\n" +
+            "Other name: " + other.name + "\n" +
+            "Other tag: " + other.tag + "\n" +
+            "Other layer: " + LayerMask.LayerToName(other.gameObject.layer) + "\n" +
+            "Root object: " + other.transform.root.name
+        );
+
         onTriggered?.Invoke();
     }
-
 }

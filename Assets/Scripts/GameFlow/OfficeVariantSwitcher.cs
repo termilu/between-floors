@@ -12,9 +12,10 @@ public class OfficeVariantSwitcher : MonoBehaviour
     {
         SetNormal();
     }
-
+    
     public void OnElevatorButtonPressed()
     {
+        Debug.Log("[OnElevatorButtonPressed] ELEVATOR BUTTON PRESSED");
         pressCount++;
 
         if (pressCount >= switchAtCount)
