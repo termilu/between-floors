@@ -5,117 +5,110 @@ public class ToiletStallAnomaly : MonoBehaviour
 {
     [Header("References")]
 
-    // Transform of the stall door that will rotate
+    // Transform of the stall door pivot that will rotate
     public Transform door;
 
-    // AudioSource placed inside the stall
+    // Short slam SFX (plays when the door reaches the closed state)
+    public AudioSource slamAudio;
+
+    // Creepy inside audio (plays after a delay, optional)
     public AudioSource insideAudio;
 
 
     [Header("Door Rotation (Local Space)")]
 
-    // Local rotation of the door when it is open
     public Vector3 openEuler = new Vector3(0f, 0f, -75f);
-
-    // Local rotation of the door when it is closed
     public Vector3 closedEuler = new Vector3(0f, 0f, 0f);
 
 
     [Header("Timing")]
 
-    // How fast the door slams shut
-    public float slamDuration = 0.12f;
+    // Total time for the door closing animation (seconds)
+    public float closeDuration = 0.25f;
 
-    // Audio delay after door slam
-    public float audioDelay = 0.15f;
+    // Optional delay after the slam before inside audio starts
+    public float insideAudioDelay = 0.15f;
 
 
     [Header("Trigger Settings")]
 
-    // Only objects with this tag can trigger the anomaly
     public string triggerTag = "Player";
-
-    // If true, the anomaly can only be triggered once
     public bool triggerOnce = true;
 
 
     private bool hasTriggered = false;
-
     private Quaternion openRotation;
     private Quaternion closedRotation;
 
-
     private void Awake()
     {
-        // Cache rotations for performance
         openRotation = Quaternion.Euler(openEuler);
         closedRotation = Quaternion.Euler(closedEuler);
     }
 
     private void Start()
     {
-        // Ensure the door starts in the open position
         if (door != null)
-        {
             door.localRotation = openRotation;
-        }
 
-        // Ensure audio does not play automatically
-        if (insideAudio != null)
-        {
-            insideAudio.playOnAwake = false;
-        }
+        if (slamAudio != null) slamAudio.playOnAwake = false;
+        if (insideAudio != null) insideAudio.playOnAwake = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        // Prevent re-triggering if only one activation is allowed
-        if (triggerOnce && hasTriggered)
-            return;
-
-        // Check tag if required
-        if (!string.IsNullOrEmpty(triggerTag) && !other.CompareTag(triggerTag))
-            return;
+        if (triggerOnce && hasTriggered) return;
+        if (!string.IsNullOrEmpty(triggerTag) && !other.CompareTag(triggerTag)) return;
 
         hasTriggered = true;
-        StartCoroutine(SlamDoorAndPlayAudio());
+        StartCoroutine(CloseDoorThenPlayAudio());
     }
 
-    private IEnumerator SlamDoorAndPlayAudio()
+    private IEnumerator CloseDoorThenPlayAudio()
     {
-        // Slam the door shut
-        if (door != null)
+        if (door == null)
         {
-            Quaternion startRotation = door.localRotation;
-            Quaternion endRotation = closedRotation;
-
-            float elapsed = 0f;
-
-            while (elapsed < slamDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / slamDuration);
-
-                // Slam effect using an ease-out curve
-                float easedT = 1f - Mathf.Pow(1f - t, 6f);
-
-                door.localRotation = Quaternion.Slerp(startRotation, endRotation, easedT);
-                yield return null;
-            }
-
-            door.localRotation = endRotation;
+            Debug.LogError("[ToiletStallAnomaly] Door reference is missing.");
+            yield break;
         }
 
-        // Optional delay before audio playback
-        if (audioDelay > 0f)
+        Quaternion startRotation = door.localRotation;
+        Quaternion endRotation = closedRotation;
+
+        float elapsed = 0f;
+
+        while (elapsed < closeDuration)
         {
-            yield return new WaitForSeconds(audioDelay);
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / closeDuration);
+
+            // Ease-in + ease-out for a more natural close
+            float easedT = SmoothStep01(t);
+
+            door.localRotation = Quaternion.Slerp(startRotation, endRotation, easedT);
+            yield return null;
         }
 
-        // Play the sound inside the stall
+        // Ensure we end exactly at the closed rotation
+        door.localRotation = endRotation;
+
+        // Play the slam sound immediately after reaching the closed state (same frame)
+        if (slamAudio != null)
+            slamAudio.Play();
+
+        // Optionally play inside audio after a delay
         if (insideAudio != null)
         {
+            if (insideAudioDelay > 0f)
+                yield return new WaitForSeconds(insideAudioDelay);
+
             insideAudio.Play();
         }
+    }
+
+    private float SmoothStep01(float t)
+    {
+        // Standard smoothstep (ease-in-out) in range [0..1]
+        return t * t * (3f - 2f * t);
     }
 }
