@@ -5,17 +5,17 @@ public class ToiletStallAnomaly : MonoBehaviour
 {
     [Header("References")]
 
-    // Transform of the stall door pivot that will rotate
+    // Transform of the stall door
     public Transform door;
 
-    // Short slam SFX (plays when the door reaches the closed state)
+    // Door slam SFX
     public AudioSource slamAudio;
 
-    // Creepy inside audio (plays after a delay, optional)
+    // Inside stall audio SFC (played after door slam)
     public AudioSource insideAudio;
 
 
-    [Header("Door Rotation (Local Space)")]
+    [Header("Door Rotation")]
 
     public Vector3 openEuler = new Vector3(0f, 0f, -75f);
     public Vector3 closedEuler = new Vector3(0f, 0f, 0f);
@@ -23,7 +23,7 @@ public class ToiletStallAnomaly : MonoBehaviour
 
     [Header("Timing")]
 
-    // Total time for the door closing animation (seconds)
+    // Total time for the door closing animation
     public float closeDuration = 0.25f;
 
     // Optional delay after the slam before inside audio starts
@@ -66,12 +66,6 @@ public class ToiletStallAnomaly : MonoBehaviour
 
     private IEnumerator CloseDoorThenPlayAudio()
     {
-        if (door == null)
-        {
-            Debug.LogError("[ToiletStallAnomaly] Door reference is missing.");
-            yield break;
-        }
-
         Quaternion startRotation = door.localRotation;
         Quaternion endRotation = closedRotation;
 
@@ -82,17 +76,17 @@ public class ToiletStallAnomaly : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / closeDuration);
 
-            // Ease-in + ease-out for a more natural close
+            // Ease-in + ease-out for a more natural closing of door
             float easedT = SmoothStep01(t);
 
             door.localRotation = Quaternion.Slerp(startRotation, endRotation, easedT);
             yield return null;
         }
 
-        // Ensure we end exactly at the closed rotation
+        // Ensure it ends exactly at the closed rotation
         door.localRotation = endRotation;
 
-        // Play the slam sound immediately after reaching the closed state (same frame)
+        // Play the slam sound immediately after reaching the closed state
         if (slamAudio != null)
             slamAudio.Play();
 
