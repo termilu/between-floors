@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace _Project.Scripts.Data
 {
@@ -9,7 +10,7 @@ namespace _Project.Scripts.Data
         public int maxFloors = 9; //Muss noch besprochen werden
         
         [Header("Movement")]
-        public Enums.MovementType defaultMovementType = Enums.MovementType.Teleport;
+        public MovementType defaultMovementType = MovementType.Teleport;
         
         [Header("Feedback")]
         public float resultDurationSeconds = 2.0f; //hilfreich für Feedback-Animationen etc.
