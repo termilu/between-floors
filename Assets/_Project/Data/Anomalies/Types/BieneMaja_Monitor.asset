@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3303ed30cf4272849b7366ed7ba9a4, type: 3}
   m_Name: BieneMaja_Monitor
   m_EditorClassIdentifier: 
-  id: 
+  id: Biene Maja Monitor
   type: 0
   defaultIntensity: 1
-  viewPrefab: {fileID: 0}
+  viewPrefab: {fileID: 7642621958585681311, guid: 7f37f48dbe6c9c140b02536680262b4b, type: 3}
   defaultAudioClip: {fileID: 0}
