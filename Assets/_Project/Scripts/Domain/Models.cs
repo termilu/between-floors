@@ -7,7 +7,7 @@ namespace _Project.Scripts.Domain
     {
         public int currentFloor { get; internal set; }
         public int failCount { get; internal set; }
-        public int Score { get; internal set; }
+        public int score { get; internal set; }
         public MovementType movementType { get; internal set; }
         
         public int highestFloorReached { get; internal set; } 
