@@ -7,11 +7,14 @@ namespace _Project.Scripts.Data
     {
         [Header("Highest Floor")]
         public int maxFloors = 9; //Muss noch besprochen werden
+
+        [Header("Highest Floor")] 
+        public int maxFails = 3; //Macht Spiel schwere/spannender
         
         [Header("Movement")]
         public MovementType defaultMovementType = MovementType.Teleport;
         
         [Header("Feedback")]
-        public float resultDurationSeconds = 2.0f; //hilfreich für Feedback-Animationen etc.
+        public float resultDurationSeconds = 2.0f; //Hilfreich für Feedback-Animationen etc.
     }
 }
