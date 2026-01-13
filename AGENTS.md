@@ -2,7 +2,7 @@
 - Project name: office_project
 - Unity version: Unity 2022.3.62f2
 - Active game object:
-  - Name: Canvas
+  - Name: EventSystem
   - Tag: Untagged
-  - Layer: Overlay UI
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
