@@ -3,6 +3,7 @@ using UnityEngine;
 using _Project.Scripts.Data;
 using _Project.Scripts.Domain;
 using _Project.Scripts.Domain.States;
+using _Project.Scripts.Presentation.Movement;
 
 namespace _Project.Scripts.Presentation
 {
@@ -15,9 +16,11 @@ namespace _Project.Scripts.Presentation
         [Header("Scene References")]
         [SerializeField] private VRPlayerController playerController;
         [SerializeField] private UIManager uiManager;
+        [SerializeField] private HUDController hudController;
         [SerializeField] private AudioManager audioManager;
         [SerializeField] private VFXManager vfxManager;
         [SerializeField] private AnomalyViewSpawner anomalyViewSpawner;
+        [SerializeField] private ElevatorController elevatorController;
         
         public static SceneBootstrapper instance { get; private set; }
         public GameContext context { get; private set; }
@@ -77,26 +80,49 @@ namespace _Project.Scripts.Presentation
         {
             if (context == null) return;
             
-            if (uiManager != null) uiManager.Initialize(context);
-            
-            if (audioManager != null) audioManager.Initialize(context);
-            if (vfxManager != null) vfxManager.Initialize(context);
-            
-            if (anomalyViewSpawner != null) anomalyViewSpawner.Initialize(context);
-            
-            if (playerController != null && gameSettings != null)
+            if (playerController != null)
             {
-                playerController.Initialize(context, gameSettings);
+                playerController.Initialize(context);
+            }
+            
+            if (uiManager != null)
+            {
+                uiManager.Initialize(context);
+            }
+
+            if (hudController != null)
+            {
+                hudController.Initialize(context);
+            }
+            
+            if (audioManager != null)
+            {
+                audioManager.Initialize(context);
+            }
+
+            if (vfxManager != null)
+            {
+                vfxManager.Initialize(context);
+            }
+            
+            if (anomalyViewSpawner != null)
+            {
+                anomalyViewSpawner.Initialize(context, floors);
+            }
+            
+            if (elevatorController != null)
+            {
+                elevatorController.Initialize(context);
             }
         }
 
         public void StartGameFromUI()
         {
             if (context == null) return;
-            
-            if (context.stateMachine.currentState is MainMenuState main)
+
+            if (context.stateMachine.currentState is MainMenuState menu)
             {
-                main.StartGame(context.flow);
+                menu.StartGame(context.flow);
             }
         }
 
@@ -104,9 +130,9 @@ namespace _Project.Scripts.Presentation
         {
             if (context == null) return;
 
-            if (context.stateMachine.currentState is MemorizeState memorize)
+            if (context.stateMachine.currentState is MemorizeState mem)
             {
-                memorize.PlayerReady();
+                mem.PlayerReady();
             }
         }
     }
