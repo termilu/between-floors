@@ -21,4 +21,4 @@ namespace _Project.Scripts.Presentation
             this.anomalies = anomalies;
         }
     }
-}
+}   

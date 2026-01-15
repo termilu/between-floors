@@ -43,7 +43,7 @@ namespace _Project.Scripts.Presentation
 
         public void PlayEffect(string effectId)
         {
-            //TODO: Vielleicht zwei verschiede Geräusche im Aufzug
+            //TODO: Mögliche Animationen, Lichter
         }
     }
 }
