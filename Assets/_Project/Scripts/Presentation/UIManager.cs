@@ -36,13 +36,13 @@ namespace _Project.Scripts.Presentation
         public void OnSetTeleport()
         {
             if (context == null) return;
-            context.flow.session.movementType = MovementType.Teleport;
+            context.flow.SetMovementType(MovementType.Teleport);
         }
 
         public void OnSetSmooth()
         {
             if (context == null) return;
-            context.flow.session.movementType = MovementType.Smooth;
+            context.flow.SetMovementType(MovementType.Smooth);
         }
     }
 }
