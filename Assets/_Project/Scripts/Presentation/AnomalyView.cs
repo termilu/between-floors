@@ -10,24 +10,23 @@ namespace _Project.Scripts.Presentation
 
         public AnomalyInstance instance { get; private set; }
 
-        public void Setup(AnomalyInstance inst)
+        public virtual void Setup(AnomalyInstance inst)
         {
             instance = inst;
-            ApplyActiveState(inst != null && inst.isActive);
         }
 
-        public void ApplyActiveState(bool active)
+        public virtual void ApplyActiveState(bool active)
         {
             if (root != null) root.SetActive(active);
             else gameObject.SetActive(active);
         }
 
-        public void PlayEffect()
+        public virtual void PlayEffect()
         {
             //TODO
         }
 
-        public void StopEffect()
+        public virtual void StopEffect()
         {
             //TODO
         }
