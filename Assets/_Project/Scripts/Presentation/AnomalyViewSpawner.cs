@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using _Project.Scripts.Data;
 using _Project.Scripts.Domain;
@@ -21,20 +21,32 @@ namespace _Project.Scripts.Presentation
         public void Initialize(GameContext ctx, List<FloorConfigSO> floorConfigs)
         {
             if (context != null)
-                context.events.onAnomaliesGenerated -= OnAnomaliesGenerated;
+                Unsubscribe();
 
             context = ctx;
 
             if (context != null)
-                context.events.onAnomaliesGenerated += OnAnomaliesGenerated;
+                Subscribe();
 
             PrewarmAll(floorConfigs);
         }
 
         private void OnDestroy()
         {
-            if (context != null)
-                context.events.onAnomaliesGenerated -= OnAnomaliesGenerated;
+            Unsubscribe();
+        }
+
+        private void Subscribe()
+        {
+            context.events.onAnomaliesActivated += OnAnomaliesActivated;
+            context.events.onAnomaliesDeactivated += OnAnomaliesDeactivated;
+        }
+
+        private void Unsubscribe()
+        {
+            if (context == null) return;
+            context.events.onAnomaliesActivated -= OnAnomaliesActivated;
+            context.events.onAnomaliesDeactivated -= OnAnomaliesDeactivated;
         }
 
         private void PrewarmAll(List<FloorConfigSO> floorConfigs)
@@ -104,17 +116,22 @@ namespace _Project.Scripts.Presentation
             return t;
         }
 
-        private void OnAnomaliesGenerated(List<AnomalyInstance> anomalies)
+        private void OnAnomaliesDeactivated(int floorId)
         {
-            if (context == null) return;
-
-            int floorId = context.flow.session.currentFloor;
-            
             foreach (var kv in prewarmed)
             {
                 if (kv.Key.floorId != floorId) continue;
-                if (kv.Value != null) kv.Value.ApplyActiveState(false);
+                if (kv.Value != null)
+                {
+                    kv.Value.StopEffect();
+                    kv.Value.ApplyActiveState(false);
+                }
             }
+        }
+
+        private void OnAnomaliesActivated(int floorId, List<AnomalyInstance> anomalies)
+        {
+            OnAnomaliesDeactivated(floorId);
             
             if (anomalies == null) return;
 
@@ -129,10 +146,12 @@ namespace _Project.Scripts.Presentation
                 {
                     view.Setup(inst);
                     view.ApplyActiveState(inst.isActive);
+                    if (inst.isActive) view.PlayEffect();
+                    else view.StopEffect();
                 }
                 else
                 {
-                    Debug.LogWarning($"[AnomalyViewSpawner] Kein prewarmed View gefunden für Floor {floorId}, Type '{inst.anomalyType.id}'.");
+                    Debug.LogWarning($"[AnomalyViewSpawner] Kein prewarmed View gefunden f\u00fcr Floor {floorId}, Type '{inst.anomalyType.id}'.");
                 }
             }
         }
