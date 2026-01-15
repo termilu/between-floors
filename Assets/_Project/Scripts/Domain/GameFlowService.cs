@@ -12,6 +12,7 @@ namespace _Project.Scripts.Domain
         
         public GameSession session { get; }
         public FloorRuntime currentFloorRuntime { get; private set; }
+        public float resultDurationSeconds => settings != null ? settings.resultDurationSeconds : 2.0f;
 
         public GameFlowService(
             GameSettingsSO settings,
@@ -44,6 +45,9 @@ namespace _Project.Scripts.Domain
 
         public void StartFloor(int floorId)
         {
+            if (currentFloorRuntime != null)
+                events.RaiseAnomaliesDeactivated(currentFloorRuntime.floorId);
+
             session.currentFloor = floorId;
             
             if(floorId > session.highestFloorReached)
@@ -59,42 +63,91 @@ namespace _Project.Scripts.Domain
             
             events.RaiseFloorChanged(currentFloorRuntime);
             events.RaiseAnomaliesGenerated(generatedAnomalies);
+            events.RaiseAnomaliesActivated(floorId, generatedAnomalies);
         }
 
-        public void ProcessDecision(AnomalyReportData report)
+        public DecisionResult ProcessDecision(AnomalyReportData report)
         {
             bool hadAnomaly = currentFloorRuntime.hasAnyActiveAnomalies();
             bool correctDecision = hadAnomaly == report.reportedAnomaly;
-            int nextFloor;
+
+            int nextFloor = session.currentFloor;
+            bool isGameOver = false;
 
             if (correctDecision)
             {
                 session.score++;
                 events.RaiseScoreUpdated(session.score);
-                nextFloor = session.currentFloor + 1;
-            }
-            else
-            {
-                session.failCount++;
-                StartFloor(0);
-                nextFloor = 0;
 
-                if (session.failCount >= settings.maxFails)
-                {
-                    events.RaiseGameOver(new GameOverData(
-                        session.score,
-                        session.highestFloorReached,
-                        session.failCount));
-                }
+                nextFloor = session.currentFloor + 1;
+
+                events.RaiseDecisionOutcome(new DecisionOutcomeData(
+                    wasCorrect: true,
+                    hadAnomaly: hadAnomaly,
+                    newScore: session.score,
+                    newFailCount: session.failCount,
+                    nextFloor: nextFloor));
+
+                return new DecisionResult(nextFloor, isGameOver);
             }
-            
+
+            // falsche Entscheidung
+            session.failCount++;
+
+            int maxFails = settings != null ? settings.maxFails : 3;
+
+            // GameOver
+            if (session.failCount >= maxFails)
+            {
+                isGameOver = true;
+
+                events.RaiseDecisionOutcome(new DecisionOutcomeData(
+                    wasCorrect: false,
+                    hadAnomaly: hadAnomaly,
+                    newScore: session.score,
+                    newFailCount: session.failCount,
+                    nextFloor: 0));
+
+                events.RaiseGameOver(new GameOverData(
+                    session.score,
+                    session.highestFloorReached,
+                    session.failCount));
+
+                return new DecisionResult(0, isGameOver);
+            }
+
+            // Kein GameOver -> zurück auf Floor 0
+            nextFloor = 0;
+
             events.RaiseDecisionOutcome(new DecisionOutcomeData(
-                wasCorrect: correctDecision,
+                wasCorrect: false,
                 hadAnomaly: hadAnomaly,
                 newScore: session.score,
                 newFailCount: session.failCount,
                 nextFloor: nextFloor));
-                
+
+            return new DecisionResult(nextFloor, isGameOver);
+        }
+
+
+        public void SetMovementType(MovementType type)
+        {
+            session.movementType = type;
         }
     }
+    
+    public readonly struct DecisionResult
+    {
+        public readonly int nextFloor;
+        public readonly bool isGameOver;
+
+        public DecisionResult(int nextFloor, bool isGameOver)
+        {
+            this.nextFloor = nextFloor;
+            this.isGameOver = isGameOver;
+        }
+    }
+
 }
+
+
