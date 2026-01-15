@@ -7,6 +7,8 @@ namespace _Project.Scripts.Domain
     {
         public event Action<FloorRuntime> onFloorChanged;
         public event Action<List<AnomalyInstance>> onAnomaliesGenerated;
+        public event Action<int> onAnomaliesDeactivated;
+        public event Action<int, List<AnomalyInstance>> onAnomaliesActivated;
         public event Action<IGameState> onStateChanged;
         public event Action<GameOverData> onGameOver;
         public event Action<int> onScoreUpdated;
@@ -18,6 +20,12 @@ namespace _Project.Scripts.Domain
 
         internal void RaiseAnomaliesGenerated(List<AnomalyInstance> anomalies)
             => onAnomaliesGenerated?.Invoke(anomalies);
+
+        internal void RaiseAnomaliesDeactivated(int floorId)
+            => onAnomaliesDeactivated?.Invoke(floorId);
+
+        internal void RaiseAnomaliesActivated(int floorId, List<AnomalyInstance> anomalies)
+            => onAnomaliesActivated?.Invoke(floorId, anomalies);
 
         internal void RaiseStateChanged(IGameState state)
             => onStateChanged?.Invoke(state);
