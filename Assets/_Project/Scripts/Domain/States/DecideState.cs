@@ -17,8 +17,14 @@
 
         public void SubmitDecision(bool reportedAnomaly)
         {
-            flow.ProcessDecision(new AnomalyReportData(reportedAnomaly));
-            stateMachine.changeState(new ResultState(stateMachine, flow));
+            var result = flow.ProcessDecision(new AnomalyReportData(reportedAnomaly));
+
+            stateMachine.changeState(new ResultState(
+                stateMachine,
+                flow,
+                durationSeconds: flow.resultDurationSeconds,
+                nextFloor: result.nextFloor,
+                isGameOver: result.isGameOver));
         }
     }
 }
