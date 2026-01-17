@@ -35,6 +35,7 @@ TagManager:
   - QDSUITextInputField
   - SamplesInfoPanel
   - QDSUIToggleCheckboxRadio
+  - FingerTip
   layers:
   - Default
   - TransparentFX
