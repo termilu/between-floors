@@ -8,7 +8,7 @@
   - Layers:
     - Default, TransparentFX, Ignore Raycast, Floor, Water, UI, Interactable
 - Active game object:
-  - Name: Trigger
+  - Name: shelf_alternative_2
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
