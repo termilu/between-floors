@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6099686469036096772}
   - component: {fileID: 4771418972886470512}
   - component: {fileID: 9128935639938147159}
-  - component: {fileID: 1352811757067412615}
   m_Layer: 0
   m_Name: Office chair.001 (3)
   m_TagString: Untagged
@@ -107,17 +106,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300092, guid: 18cd780e6948a554a850b2d047ebf8fb, type: 3}
---- !u!114 &1352811757067412615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7607050147319279288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5575fc97d7cd96d448362c08dfb3b508, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chair: {fileID: 7607050147319279288}
-  anomalyTriggered: 1

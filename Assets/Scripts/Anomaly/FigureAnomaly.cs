@@ -1,21 +1,44 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FigureAnomaly : MonoBehaviour
 {
+    [Header("References")]
     public GameObject figure;
+
+    [Header("Timing")]
+    public float visibleDuration = 2f;
+
+    [Header("Trigger Settings")]
+    public string triggerTag = "Player";
+    public bool triggerOnce = true;
+
     private bool anomalyTriggered = false;
-    void Start()
+
+    private void Awake()
     {
+        if (figure == null)
+        {
+            Debug.LogError($"{name}: Figure reference missing.");
+            enabled = false;
+            return;
+        }
+
         figure.SetActive(false);
     }
 
-    public void Appear()
+    private void OnTriggerEnter(Collider other)
     {
-        if(!anomalyTriggered)
-        {
-            figure.SetActive(true);
-        }
+        if (triggerOnce && anomalyTriggered) return;
+        if (!string.IsNullOrEmpty(triggerTag) && !other.CompareTag(triggerTag)) return;
+
+        anomalyTriggered = true;
+        StartCoroutine(ShowTemporarily());
+    }
+    private IEnumerator ShowTemporarily()
+    {
+        figure.SetActive(true);
+        yield return new WaitForSeconds(visibleDuration);
+        figure.SetActive(false);
     }
 }
