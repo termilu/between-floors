@@ -320,7 +320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8685904535389472693, guid: d76b3e62ea549db45a9c3cd23b1be78a, type: 3}
       propertyPath: winAfterCorrect
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
