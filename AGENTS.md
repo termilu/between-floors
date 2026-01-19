@@ -2,7 +2,7 @@
 - Project name: office_project
 - Unity version: Unity 2022.3.62f2
 - Active game object:
-  - Name: wall_standard (30)
+  - Name: Storage Room
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
