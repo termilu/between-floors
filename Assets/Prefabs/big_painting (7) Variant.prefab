@@ -75,29 +75,5 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8229265224472104520, guid: a3862a85dc82a1e478bba0d9b5241d73, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 585269066597100645}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a3862a85dc82a1e478bba0d9b5241d73, type: 3}
---- !u!1 &3344908474037374536 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8229265224472104520, guid: a3862a85dc82a1e478bba0d9b5241d73, type: 3}
-  m_PrefabInstance: {fileID: 6656242836663664640}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &585269066597100645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3344908474037374536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8acdd5418f9a244c83e920cb6cc053a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  normalMat: {fileID: 2100000, guid: 4efe8bd0114916642b090674ca243a42, type: 2}
-  anomalyMat: {fileID: 2100000, guid: f28362f2a063fdc47bf7468405320698, type: 2}
-  isAnomalyPic: 1
-  pic: {fileID: 3344908474037374536}
