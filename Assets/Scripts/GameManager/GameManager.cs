@@ -25,6 +25,10 @@ public class GameManager : MonoBehaviour
     public bool HasRound { get; private set; }
     public int CorrectCount { get; private set; }
 
+    // Elevator selection state
+    public bool HasPendingElevatorChoice { get; private set; }
+    private ElevatorChoice pendingChoice;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -38,8 +42,9 @@ public class GameManager : MonoBehaviour
         IsPaused = false;
 
         CorrectCount = 0;
-        GenerateNextRound();
+        HasPendingElevatorChoice = false;
 
+        GenerateNextRound();
         SceneManager.LoadScene(gameScene);
     }
 
@@ -50,14 +55,12 @@ public class GameManager : MonoBehaviour
 
         HasRound = false;
         CorrectCount = 0;
+        HasPendingElevatorChoice = false;
 
         SceneManager.LoadScene(mainMenuScene);
     }
 
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
+    public void QuitGame() => Application.Quit();
 
     public void SetPaused(bool paused)
     {
@@ -71,10 +74,27 @@ public class GameManager : MonoBehaviour
         HasRound = true;
     }
 
-    public void SubmitElevatorChoice(ElevatorChoice choice)
+    // Called by UP/DOWN buttons
+    public void SetPendingElevatorChoice(ElevatorChoice choice)
     {
-        bool playerSaysAnomaly = (choice == ElevatorChoice.Down);
+        pendingChoice = choice;
+        HasPendingElevatorChoice = true;
+        Debug.Log($"[GameManager] Pending elevator choice set: {choice}");
+    }
+
+    // Called when player walks into elevator cabin trigger
+    public void CommitPendingChoiceAndLoadNextRound()
+    {
+        if (!HasPendingElevatorChoice)
+        {
+            Debug.Log("[GameManager] Player entered elevator but no choice was selected.");
+            return;
+        }
+
+        bool playerSaysAnomaly = (pendingChoice == ElevatorChoice.Down);
         bool correct = (playerSaysAnomaly == RoundHasAnomaly);
+
+        HasPendingElevatorChoice = false;
 
         if (!correct)
         {

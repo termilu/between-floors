@@ -14,18 +14,10 @@ public class ElevatorDecisionButton : MonoBehaviour
     {
         if (used) return;
 
-        // Ignore elevator parts
         if (other.transform.root.name == ignoreRootName)
             return;
 
-        Debug.Log($"[ElevatorDecisionButton] Triggered by {other.name} ({choice})");
-
         used = true;
-
-        if (doorController != null)
-            doorController.OpenDoors();
-        else
-            Debug.LogWarning("[ElevatorDecisionButton] doorController not assigned!");
 
         if (GameManager.Instance == null)
         {
@@ -33,6 +25,11 @@ public class ElevatorDecisionButton : MonoBehaviour
             return;
         }
 
-        GameManager.Instance.SubmitElevatorChoice(choice);
+        GameManager.Instance.SetPendingElevatorChoice(choice);
+
+        if (doorController != null)
+            doorController.OpenDoors();
+        else
+            Debug.LogWarning("[ElevatorDecisionButton] doorController is NOT assigned!");
     }
 }
