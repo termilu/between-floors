@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class FigureAnomaly : MonoBehaviour
+public class FigureAnomaly : MonoBehaviour, IArmedAnomaly
 {
     [Header("References")]
     public GameObject figure;
@@ -14,9 +14,18 @@ public class FigureAnomaly : MonoBehaviour
     public bool triggerOnce = true;
 
     private bool anomalyTriggered = false;
+    private Collider triggerCol;
 
     private void Awake()
     {
+        triggerCol = GetComponent<Collider>();
+        if (triggerCol == null)
+        {
+            Debug.LogError($"{name}: No Collider found on the trigger object.");
+            enabled = false;
+            return;
+        }
+
         if (figure == null)
         {
             Debug.LogError($"{name}: Figure reference missing.");
@@ -24,17 +33,35 @@ public class FigureAnomaly : MonoBehaviour
             return;
         }
 
+        // Visual should start hidden always; round logic only arms the trigger
         figure.SetActive(false);
+
+        // Default: disarmed (RoundBootstrap will arm one if needed)
+        SetArmed(false);
+    }
+
+    public void SetArmed(bool armed)
+    {
+        // Reset per round
+        anomalyTriggered = false;
+
+        // If you disarm, also ensure it’s hidden
+        if (!armed && figure.activeSelf)
+            figure.SetActive(false);
+
+        triggerCol.enabled = armed;
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!triggerCol.enabled) return; // extra safety
         if (triggerOnce && anomalyTriggered) return;
         if (!string.IsNullOrEmpty(triggerTag) && !other.CompareTag(triggerTag)) return;
 
         anomalyTriggered = true;
         StartCoroutine(ShowTemporarily());
     }
+
     private IEnumerator ShowTemporarily()
     {
         figure.SetActive(true);

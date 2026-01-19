@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class BookshelfAnomaly : MonoBehaviour
+public class BookshelfAnomaly : MonoBehaviour, IArmedAnomaly
 {
     [Header("References")]
     public Transform shelf;
@@ -23,8 +23,19 @@ public class BookshelfAnomaly : MonoBehaviour
     private Vector3 startPos;
     private Quaternion startRot;
 
+    private Collider triggerCol;
+    private Coroutine revertRoutine;
+
     private void Awake()
     {
+        triggerCol = GetComponent<Collider>();
+        if (triggerCol == null)
+        {
+            Debug.LogError($"{name}: No Collider found on the trigger object.");
+            enabled = false;
+            return;
+        }
+
         if (shelf == null)
         {
             Debug.LogError($"{name}: Shelf reference missing.");
@@ -32,7 +43,14 @@ public class BookshelfAnomaly : MonoBehaviour
             return;
         }
 
-        // Cache initial transform so we can revert reliably
+        CacheStartTransform();
+
+        // Default: disarmed (RoundBootstrap arms one if needed)
+        SetArmed(false);
+    }
+
+    private void CacheStartTransform()
+    {
         if (useLocalSpace)
         {
             startPos = shelf.localPosition;
@@ -45,8 +63,25 @@ public class BookshelfAnomaly : MonoBehaviour
         }
     }
 
+    public void SetArmed(bool armed)
+    {
+        if (revertRoutine != null)
+        {
+            StopCoroutine(revertRoutine);
+            revertRoutine = null;
+        }
+
+        anomalyTriggered = false;
+
+        // Keep it clean between rounds
+        RevertNow();
+
+        triggerCol.enabled = armed;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
+        if (!triggerCol.enabled) return;
         if (triggerOnce && anomalyTriggered) return;
         if (!string.IsNullOrEmpty(triggerTag) && !other.CompareTag(triggerTag)) return;
 
@@ -54,7 +89,7 @@ public class BookshelfAnomaly : MonoBehaviour
         ApplyLevitate();
 
         if (revertAfter > 0f)
-            StartCoroutine(RevertAfterSeconds());
+            revertRoutine = StartCoroutine(RevertAfterSeconds());
     }
 
     private void ApplyLevitate()
@@ -76,6 +111,13 @@ public class BookshelfAnomaly : MonoBehaviour
     private IEnumerator RevertAfterSeconds()
     {
         yield return new WaitForSeconds(revertAfter);
+        RevertNow();
+        revertRoutine = null;
+    }
+
+    private void RevertNow()
+    {
+        if (shelf == null) return;
 
         if (useLocalSpace)
         {
