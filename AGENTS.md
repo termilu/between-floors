@@ -2,7 +2,7 @@
 - Project name: office_project
 - Unity version: Unity 2022.3.62f2
 - Active game object:
-  - Name: door_b
+  - Name: door_b_fix
   - Tag: Untagged
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
