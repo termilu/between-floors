@@ -39,7 +39,7 @@ This project was developed using common tools and technologies for VR developmen
 This project was developed by the following students as part of the **Virtual and Augmented Reality** university course:
 
 - [Jennifer A. W.](https://github.com/jxnny003)
-- [Uliana S.]
+- Uliana S.
 - [Leo W.](https://github.com/1leyo)
 - [Lucas R.](https://github.com/termilu)
 
